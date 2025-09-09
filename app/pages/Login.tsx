@@ -1,6 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { AuthService } from "~/services/authService";
+import { useUserInform } from "~/stores/useUserInform";
+import { authorizedRequest } from "~/configs";
+import type { BasicUserInform } from "~/types";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -9,6 +13,8 @@ export function Login() {
   const [errorPassword, setErrorPassword] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const setBasicUserInform = useUserInform((state) => state.setBasicUserInform);
+  const navigate = useNavigate();
 
   async function handleLogin() {
     setSubmitError(null);
@@ -29,7 +35,7 @@ export function Login() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8080/token/",
+        "http://localhost:8080/token",
         {
           username,
           password,
@@ -38,8 +44,11 @@ export function Login() {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log("Login success:", response.data);
-      // TODO: Điều hướng hoặc lưu token nếu cần
+      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      const userInform = await authorizedRequest.get<BasicUserInform>("/me");
+      setBasicUserInform(userInform.data);
+      navigate("/");
     } catch (error) {
       console.error(error);
       setSubmitError("Đăng nhập thất bại. Vui lòng kiểm tra thông tin.");

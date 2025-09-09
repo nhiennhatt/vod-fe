@@ -9,6 +9,10 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { authorizedRequest, unauthorizedRequest } from "./configs";
+import { useEffect } from "react";
+import { AuthService } from "./services/authService";
+import { useUserInform } from "./stores/useUserInform";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -42,6 +46,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const setBasicUserInform = useUserInform((state) => state.setBasicUserInform);
+  const setLoading = useUserInform((state) => state.setLoading);
+
+  useEffect(() => {
+    AuthService.loadUserInform()
+      .then((res) => {
+        setBasicUserInform(res.data);
+      })
+      .catch((err) => {})
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
   return <Outlet />;
 }
 

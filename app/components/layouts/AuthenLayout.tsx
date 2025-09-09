@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import bgVideo from "../../../public/videos/authen-bg.mp4";
+import bgVideo from "/videos/authen-bg.mp4";
 
 export default function AuthenLayout() {
   return (
