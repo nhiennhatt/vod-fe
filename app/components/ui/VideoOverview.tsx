@@ -1,14 +1,13 @@
 import { Link } from "react-router";
 import dayjs from "dayjs";
-import type { Video } from "../../types";
+import type { VideoOverview as VideoOverviewType } from "../../types";
 
 interface VideoOverviewProps {
-  video: Video;
+  video: VideoOverviewType;
   className?: string;
 }
 
 export function VideoOverview({ video, className = "" }: VideoOverviewProps) {
-  console.log(video);
   const getTimeDistance = (date: Date): string => {
     const now = dayjs();
     const videoDate = dayjs(date);
