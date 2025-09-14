@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useNavigate, useSearchParams } from "react-router";
 import { useUserInform } from "~/stores/useUserInform";
 
 interface NavItem {
@@ -17,10 +17,13 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const user = useUserInform(state => state.basicUserInform);
   const clearBasicUserInform = useUserInform(state => state.clearBasicUserInform);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [keyword, setKeyword] = useState<string>(searchParams.get("q") ?? "");
 
   const userInitials = useMemo(() => {
     if (!user) return "U";
-    const parts: string[] = [user.firstName, user.lastName].filter(Boolean);
+    const parts: string[] = [user.firstName, user.lastName].filter(Boolean) as string[];
     const initials = parts
       .slice(0, 2)
       .map((part: string) => part?.[0]?.toUpperCase() ?? "")
@@ -29,7 +32,7 @@ export function Navbar() {
   }, [user]);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 border-b border-neutral-200/70 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="fixed top-0 inset-x-0 z-50 border-b border-neutral-200/70 bg-white">
       <nav aria-label="Top navigation" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
@@ -44,7 +47,6 @@ export function Navbar() {
             </button>
 
             <Link to="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-md bg-primary-600 text-white grid place-items-center font-semibold">V</div>
               <span className="hidden text-lg font-semibold text-neutral-900 sm:inline">VOD</span>
             </Link>
           </div>
@@ -67,11 +69,21 @@ export function Navbar() {
 
           <div className="flex items-center gap-3">
             <div className="relative hidden md:block">
-              <input
-                type="search"
-                placeholder="Tìm kiếm..."
-                className="w-64 rounded-md border border-neutral-300 bg-white py-2 pl-9 pr-3 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
-              />
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const q = keyword.trim();
+                  navigate(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
+                }}
+              >
+                <input
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  type="search"
+                  placeholder="Tìm kiếm..."
+                  className="w-64 rounded-md border border-neutral-300 bg-white py-2 pl-9 pr-3 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
+                />
+              </form>
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2 text-neutral-400">
                 <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.25 5.25a7.5 7.5 0 0011.4 11.4z" />
@@ -91,7 +103,7 @@ export function Navbar() {
                   </div>
                   <div className="border-t border-neutral-200" />
                   <div className="py-1">
-                    <Link to="/profile" className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100">Hồ sơ</Link>
+                    <Link to="/me" className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100">Hồ sơ</Link>
                     <button
                       className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
                       onClick={clearBasicUserInform}

@@ -1,7 +1,7 @@
 interface User {
     username: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     middleName: string;
     dateOfBirth: Date;
     avatar: string;
@@ -9,6 +9,7 @@ interface User {
     role: UserRole;
     status: UserStatus;
     coverImg: string;
+    description: string;
 }
 
 enum UserRole {

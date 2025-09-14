@@ -52,7 +52,7 @@ export function VideoOverview({ video, className = "" }: VideoOverviewProps) {
           </h3>
 
           <p className="text-sm text-gray-600">
-            {video.user.firstName} {video.user.lastName} •&nbsp;
+            {video.user.firstName || video.user.lastName ? `${video.user.firstName} ${video.user.lastName}` : video.user.username} •&nbsp;
             <span>{getTimeDistance(video.createdOn)}</span>
           </p>
         </div>

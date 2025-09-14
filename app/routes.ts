@@ -9,6 +9,9 @@ export default [
   layout("./components/layouts/AuthenticatedProvider.tsx", [
     layout("./components/layouts/GeneralLayout.tsx", [
       index("routes/home.tsx"),
+      route("search", "./routes/search.tsx"),
+      route("video/:uid", "./routes/video.tsx"),
+      route("me", "./routes/me.tsx"),
     ]),
   ]),
   layout("./components/layouts/AuthenLayout.tsx", [
