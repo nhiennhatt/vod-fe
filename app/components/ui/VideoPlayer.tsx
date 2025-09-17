@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as dashjs from 'dashjs';
 
 interface VideoPlayerProps {
+  autoPlay?: boolean;
   videoUrl: string;
   poster?: string;
   className?: string;
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({ 
+export const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  autoPlay = false,
   videoUrl, 
   poster, 
   className = '' 
@@ -25,10 +27,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const player = dashjs.MediaPlayer().create();
     playerRef.current = player;
 
-    // Cấu hình player
     player.initialize(videoElement, videoUrl);
 
-    // Cleanup function
     return () => {
       if (playerRef.current) {
         playerRef.current.destroy();
@@ -36,18 +36,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       }
     };
   }, [videoUrl]);
-
-  const handlePlay = () => {
-    if (videoRef.current) {
-      videoRef.current.play();
-    }
-  };
-
-  const handlePause = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-    }
-  };
 
   if (error) {
     return (
@@ -80,6 +68,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         ref={videoRef}
         className="w-full h-full"
         poster={poster}
+        {...(autoPlay ? { autoPlay } : {})}
         controls
         preload="metadata"
         onLoadStart={() => setIsLoading(true)}

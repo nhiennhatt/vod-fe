@@ -25,7 +25,9 @@ enum VideoPrivacy {
 enum VideoStatus {
     PROCESSING = "PROCESSING",
     READY = "ACTIVE",
-    FAILED = "INACTIVE",
+    FAILED = "FAILED",
+    INACTIVE = "INACTIVE",
+    VIOLATED = "VIOLATED",
 }
 
 export { VideoPrivacy, VideoStatus };

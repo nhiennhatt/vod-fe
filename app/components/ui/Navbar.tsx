@@ -93,8 +93,16 @@ export function Navbar() {
 
             {user ? (
               <div className="relative group">
-                <button className="h-9 w-9 rounded-full bg-neutral-200 text-neutral-700 grid place-items-center font-semibold">
-                  {userInitials}
+                <button className="h-9 w-9 rounded-full overflow-hidden bg-neutral-200 text-neutral-700 grid place-items-center font-semibold">
+                  {user.avatar ? (
+                    <img
+                      src={`http://localhost:8080/static/avatars/${user.avatar}`}
+                      alt={user.username}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    userInitials
+                  )}
                 </button>
                 <div className="invisible absolute right-0 mt-2 w-48 overflow-hidden rounded-md border border-neutral-200 bg-white shadow-lg opacity-0 transition group-hover:visible group-hover:opacity-100">
                   <div className="px-4 py-3">
@@ -103,7 +111,9 @@ export function Navbar() {
                   </div>
                   <div className="border-t border-neutral-200" />
                   <div className="py-1">
-                    <Link to="/me" className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100">Hồ sơ</Link>
+                    <Link to="/profile" className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100">Hồ sơ</Link>
+                    <Link to="/media" className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100">Quản lý nội dung</Link>
+                    <Link to="/settings" className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100">Cài đặt tài khoản</Link>
                     <button
                       className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
                       onClick={clearBasicUserInform}
@@ -123,7 +133,6 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu */}
       <div className={`sm:hidden ${mobileOpen ? "block" : "hidden"}`}>
         <div className="space-y-1 px-4 pb-4 pt-2">
           {NAV_ITEMS.map(item => (

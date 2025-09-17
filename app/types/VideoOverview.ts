@@ -1,3 +1,5 @@
+import { VideoStatus } from "./Video";
+
 interface VideoOverview {
     uid: string;
     title: string;
@@ -8,6 +10,7 @@ interface VideoOverview {
         lastName: string;   
     },
     createdOn: Date;
+    status: VideoStatus;
 }
 
 export type { VideoOverview };

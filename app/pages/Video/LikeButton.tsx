@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { authorizedRequest } from '../../configs';
+import { LikeIcon } from '../../components/icons/LikeIcon';
 
 interface LikeButtonProps {
   videoId: string;
@@ -19,7 +20,6 @@ const LikeButton: React.FC<LikeButtonProps> = ({ videoId }) => {
         });
         setLiked(Boolean(res.data?.liked));
       } catch {
-        // ignore
       }
     };
     fetchLiked();
@@ -61,18 +61,20 @@ const LikeButton: React.FC<LikeButtonProps> = ({ videoId }) => {
   };
 
   return (
-    <div className="flex items-center space-x-3">
-      <button
-        onClick={handleToggleLike}
-        disabled={likeLoading}
-        className={`px-4 py-2 rounded transition-colors ${liked ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-700 hover:bg-gray-600'} disabled:opacity-60`}
-        aria-pressed={liked}
-        aria-label={liked ? 'Bỏ thích' : 'Thích'}
-      >
-        {likeLoading ? 'Đang xử lý...' : liked ? 'Đã thích' : 'Thích'}
-      </button>
-      <span className="text-sm text-gray-300">{likeCount}</span>
-    </div>
+    <button
+      onClick={handleToggleLike}
+      disabled={likeLoading}
+      className={`flex items-center space-x-2 px-3 py-2 rounded-full transition-colors ${liked ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-700 hover:bg-gray-600'} disabled:opacity-60`}
+      aria-pressed={liked}
+      aria-label={liked ? 'Bỏ thích' : 'Thích'}
+    >
+      <LikeIcon 
+        className={`w-5 h-5 transition-colors stroke-white ${liked ? 'fill-white' : ''}`}
+      />
+      <span className={`text-sm font-medium ${liked ? 'text-white' : 'text-gray-300'}`}>
+        {likeCount}
+      </span>
+    </button>
   );
 };
 

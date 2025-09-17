@@ -17,7 +17,7 @@ export function NewestVideos() {
 
   return (
     <div className="">
-      <h1 className="text-xl">Video mới nhất</h1>
+      <h1 className="text-xl mb-4">Video mới nhất</h1>
       <div className="grid grid-cols-3 gap-x-2 gap-y-3">
         {videos.map((video) => (
           <VideoOverview key={video.uid} video={video} />

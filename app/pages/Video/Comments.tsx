@@ -91,7 +91,6 @@ const Comments: React.FC<CommentsProps> = ({ videoId }) => {
       setComments((prev) => [newComment, ...prev]);
       setCommentInput('');
     } catch {
-      // Có thể hiển thị thông báo lỗi nếu cần
     }
   };
 
@@ -101,8 +100,7 @@ const Comments: React.FC<CommentsProps> = ({ videoId }) => {
       await authorizedRequest.delete(`/comments/${id}`);
       setComments((prev) => prev.filter((c) => c.id !== id));
     } catch {
-      // Có thể hiển thị thông báo lỗi nếu cần
-    } finally {
+      } finally {
       setDeletingId(null);
     }
   };

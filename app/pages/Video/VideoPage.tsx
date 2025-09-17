@@ -1,53 +1,30 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router';
-import { VideoPlayer } from '../../components/ui';
+import { useParams, useLoaderData, Link } from 'react-router';
+import { VideoPlayer, SubscribeButton } from '../../components/ui';
 import Comments from './Comments';
 import LikeButton from './LikeButton';
 import type { VideoDetail } from '../../types';
 import { authorizedRequest } from '../../configs';
+import { useUserInform } from '../../stores/useUserInform';
 
 const VideoPage: React.FC = () => {
   const { uid } = useParams<{ uid: string }>();
-  const [video, setVideo] = useState<VideoDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const loaderData = useLoaderData() as { video: VideoDetail };
+  const video = loaderData.video;
+  const { basicUserInform } = useUserInform();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const historySent = useRef(false);
 
-
-  useEffect(() => {
-    const fetchVideo = async () => {
-      if (!uid) {
-        setError('Video ID không hợp lệ');
-        setLoading(false);
-        return;
-      }
-      try {
-        const res = await authorizedRequest.get<VideoDetail>(`/video/${uid}`);
-        setVideo(res.data);
-      } catch (err) {
-        setError('Không thể tải thông tin video');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVideo();
-  }, [uid]);
-
-  // Cập nhật document title khi video được load
   useEffect(() => {
     if (video) {
       document.title = `${video.title} - VOD`;
     }
     
-    // Cleanup: reset title khi component unmount
     return () => {
       document.title = 'VOD';
     };
   }, [video]);
 
-  // Gửi request đến history khi video được tải thành công (chỉ một lần)
   useEffect(() => {
     const addToHistory = async () => {
       if (!uid || !video || historySent.current) return;
@@ -62,43 +39,14 @@ const VideoPage: React.FC = () => {
       }
     };
 
-    if (video) {
-      addToHistory();
-    }
-  }, [video]);
+    addToHistory();
+  }, [uid, video]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p>Đang tải video...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !video) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-center">
-          <p className="text-red-500 mb-4">{error || 'Không tìm thấy video'}</p>
-          <button 
-            onClick={() => window.history.back()} 
-            className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
-          >
-            Quay lại
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   const isProcessing = video.status === 'PROCESSING';
   const manifestUrl = `http://localhost:8080/static/video/${video.uid}/manifest.mpd`;
   const posterUrl = video.thumbnail ? `http://localhost:8080/static/${video.thumbnail}` : undefined;
 
-  // Description logic
   const maxLength = 200;
   const shouldTruncate = video.description && video.description.length > maxLength;
   const displayDescription = shouldTruncate && !isDescriptionExpanded 
@@ -130,7 +78,7 @@ const VideoPage: React.FC = () => {
           
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gray-700 rounded-full overflow-hidden flex items-center justify-center">
+              <Link to={`/profile/${video.user.username}`} className="w-12 h-12 bg-gray-700 rounded-full overflow-hidden flex items-center justify-center hover:opacity-80 transition-opacity">
                 {video.user.userInform.avatar ? (
                   <img src={`http://localhost:8080/static/avatars/${video.user.userInform.avatar}`} alt={video.title} className="w-full h-full object-cover" />
                 ) : (
@@ -138,20 +86,22 @@ const VideoPage: React.FC = () => {
                     {video.user.userInform.firstName?.[0]}{video.user.userInform.lastName?.[0]}
                   </span>
                 )}
-              </div>
-              <div>
-                <p className="font-semibold">
-                  {video.user.userInform.firstName || video.user.userInform.lastName ? `${video.user.userInform.firstName} ${video.user.userInform.lastName}` : video.user.username}
-                </p>
-                <p className="text-gray-400 text-sm">@{video.user.username}</p>
+              </Link>
+              <div className="flex items-center space-x-3">
+                <Link to={`/profile/${video.user.username}`} className="block hover:opacity-80 transition-opacity">
+                  <p className="font-semibold">
+                    {video.user.userInform.firstName || video.user.userInform.lastName ? `${video.user.userInform.firstName} ${video.user.userInform.lastName}` : video.user.username}
+                  </p>
+                  <p className="text-gray-400 text-sm">@{video.user.username}</p>
+                </Link>
+                {basicUserInform?.username !== video.user.username && (
+                  <SubscribeButton targetUsername={video.user.username} />
+                )}
               </div>
             </div>
             
             <div className="flex items-center space-x-3">
               <LikeButton videoId={uid as string} />
-              <span className="px-2 py-1 rounded text-xs font-medium bg-gray-800 border border-gray-700">
-                {video.privacy}
-              </span>
             </div>
           </div>
 
